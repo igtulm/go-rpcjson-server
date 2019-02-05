@@ -10,10 +10,17 @@ import (
 const dbDriver = "postgres"
 const dbSSLMode = "disable"
 
+type IQuerier interface {
+	Exec(query string, args ...interface{}) (sql.Result, error)
+	Prepare(query string) (*sql.Stmt, error)
+	Query(query string, args ...interface{}) (*sql.Rows, error)
+	QueryRow(query string, args ...interface{}) *sql.Row
+}
+
 type IDbConnector interface {
 	Init()
 	Close()
-	GetDb() *sql.DB
+	GetDb() IQuerier
 }
 
 type dbConnectionData struct {
@@ -60,6 +67,6 @@ func (c *DbConnector) Close() {
 	}
 }
 
-func (c *DbConnector) GetDb() *sql.DB {
+func (c *DbConnector) GetDb() IQuerier {
 	return c.DB
 }
