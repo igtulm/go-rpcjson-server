@@ -1,5 +1,7 @@
 ## JSON-RPC Server
 
+### Start
+
 To start the server just run:
 
 ```
@@ -23,4 +25,11 @@ curl -X POST -H "Content-Type: application/json" -d '{"id": 1, "method": "user.U
 Get account by login:
 ```
 curl -X POST -H "Content-Type: application/json" -d '{"id": 1, "method": "user.GetByLogin", "params": [{"Login":"CURRENT_LOGIN_IS_HERE"}]}' http://127.0.0.1:1234/rpc
+```
+
+### Testing:
+
+For testing run:
+```
+docker-compose run --rm app make test
 ```

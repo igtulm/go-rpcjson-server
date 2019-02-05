@@ -6,4 +6,5 @@ RUN go get github.com/kelseyhightower/envconfig && \
     go get github.com/lib/pq && \
     go get github.com/gorilla/mux && \
     go get github.com/gorilla/rpc && \
-    go get github.com/gorilla/rpc/json
+    go get github.com/gorilla/rpc/json && \
+    go get github.com/stretchr/testify/require

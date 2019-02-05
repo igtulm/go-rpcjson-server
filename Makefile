@@ -36,4 +36,4 @@ run:
 	@$(TARGET_BINARY)
 
 test:
-	echo TODO
+	@go test
