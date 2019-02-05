@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
@@ -68,7 +67,7 @@ func (s *UserService) Create(r *http.Request, args *UserArgs, result *Response) 
 		return err
 	}
 	result.Status = RPCStatusSuccess
-	result.Body = fmt.Sprintf("{\"%s\": \"%s\"}", "id", userID)
+	result.Body = userID
 	return nil
 }
 
