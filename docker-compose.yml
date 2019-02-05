@@ -1,0 +1,22 @@
+version: '3.1'
+services:
+  app:
+    build: .
+    volumes:
+    - .:/go/src/app
+    working_dir: /go/src/app
+    command: bash -c "make && make db && make run"
+    links:
+    - db
+    ports:
+    - 1234:1234
+    env_file:
+    - app.env
+  db:
+    image: postgres:11.1
+    ports:
+    - 5432:5432
+    environment:
+      POSTGRES_USER: demo
+      POSTGRES_PASSWORD: demo
+      POSTGRES_DB: demo
