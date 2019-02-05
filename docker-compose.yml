@@ -14,8 +14,6 @@ services:
     - app.env
   db:
     image: postgres:11.1
-    ports:
-    - 5432:5432
     environment:
       POSTGRES_USER: demo
       POSTGRES_PASSWORD: demo
