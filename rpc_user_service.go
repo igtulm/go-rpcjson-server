@@ -6,6 +6,13 @@ import (
 	"net/http"
 )
 
+type RPCStatus string
+
+const (
+	RPCStatusSuccess = RPCStatus("success")
+	RPCStatusFail    = RPCStatus("fail")
+)
+
 type UserService struct{
 	Repo IUserRepository
 }
@@ -20,20 +27,16 @@ type UserUpdateArgs struct {
 }
 
 type Response struct {
-	Result string
+	Status     RPCStatus
+	Body       string
+	ErrMessage string
 }
 
-// TODO make json preparation smarter
-func jsonErrMsg(err error) string {
-	return fmt.Sprintf("{\"status\": \"fail\", \"message\": \"%v\"}", err)
-}
-
-func jsonStatusOk() string {
-	return fmt.Sprintf("{\"status\": \"ok\"}")
-}
-
-func jsonFieldWithValue(field string, value string) string {
-	return fmt.Sprintf("{\"%s\": \"%s\"}", field, value)
+func prepareErrMsg(err error) *Response {
+	return &Response{
+		Status: RPCStatusFail,
+		ErrMessage: err.Error(),
+	}
 }
 
 func NewUserService(repo IUserRepository) *UserService{
@@ -45,34 +48,36 @@ func NewUserService(repo IUserRepository) *UserService{
 func (s *UserService) GetByLogin(r *http.Request, args *UserArgs, result *Response) error {
 	user, err := s.Repo.GetByLogin(args.Login)
 	if err != nil {
-		result.Result = jsonErrMsg(err)
+		result = prepareErrMsg(err)
 		return err
 	}
 	item, err := json.Marshal(user)
 	if err != nil {
-		result.Result = jsonErrMsg(err)
+		result = prepareErrMsg(err)
 		return err
 	}
-	result.Result = string(item)
+	result.Status = RPCStatusSuccess
+	result.Body = string(item)
 	return nil
 }
 
 func (s *UserService) Create(r *http.Request, args *UserArgs, result *Response) error {
 	userID, err := s.Repo.Create(args.Login)
 	if err != nil {
-		result.Result = jsonErrMsg(err)
+		result = prepareErrMsg(err)
 		return err
 	}
-	result.Result = jsonFieldWithValue("id", userID)
+	result.Status = RPCStatusSuccess
+	result.Body = fmt.Sprintf("{\"%s\": \"%s\"}", "id", userID)
 	return nil
 }
 
 func (s *UserService) Update(r *http.Request, args *UserUpdateArgs, result *Response) error {
 	err := s.Repo.Update(args.Login, args.NewLogin)
 	if err != nil {
-		result.Result = jsonErrMsg(err)
+		result = prepareErrMsg(err)
 		return err
 	}
-	result.Result = jsonStatusOk()
+	result.Status = RPCStatusSuccess
 	return nil
 }
